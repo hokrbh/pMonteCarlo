@@ -57,6 +57,8 @@ typedef struct
     LAYER_PROP *layer;              // Struct to hold the layer properties
     unsigned int numLayers;         // Number of layers used
     TAUS_SEED globalTausSeed;       // Global 4 element Taus seed
+    unsigned int writeDetData;              // Flag to determine if detection data is to be written
+    char detDataFilename[STR_SIZE]; // Filename for the detection data
     double maxStep_mm;              // Max distance photon is allowed to travel
     double weightThreshold;         // Threshold weight
     double rouletteProb;            // Roulette probability

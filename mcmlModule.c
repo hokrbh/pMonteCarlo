@@ -38,8 +38,8 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     cfg.globalTausSeed.z3 = rand();
     cfg.globalTausSeed.z4 = rand();
     cfg.maxStep_mm = 1.0E6;
-    cfg.weightThreshold = 1.0E-25;
-    cfg.rouletteProb = 0.1;
+    cfg.weightThreshold = 1.0E-9;
+    //cfg.rouletteProb = 0.1;
     
     double reflectionCoeff = 0.0;
     double transmissionCoeff = 0.0;
@@ -78,11 +78,24 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     reflectionCoeff /= (double)cfg.numPhotons;
     transmissionCoeff /= (double)cfg.numPhotons;
     specularCoeff /= (double)cfg.numPhotons;
+    double totalRefCoeff = reflectionCoeff+specularCoeff;
+    
+    // If flag is true write out detection data
+    if( cfg.writeDetData == 1 )
+    {
+        FILE *detData = fopen(cfg.detDataFilename, "w");
+        if(detData == NULL)
+        {
+            fprintf(stderr, "Error opening detection data file %s\n", cfg.detDataFilename);
+            return NULL;
+        }
+        fwrite(data, sizeof(PHOTON_DATA), cfg.numPhotons, detData);
+    }
     
     //printf("R = %lg\tT = %lg\n", reflectionCoeff, transmissionCoeff);
     
     // Build the return values
-    PyObject *ret = Py_BuildValue("ddd", reflectionCoeff, transmissionCoeff, specularCoeff);
+    PyObject *ret = Py_BuildValue("dddd", reflectionCoeff, transmissionCoeff, specularCoeff, totalRefCoeff);
     
     free(cfg.layer);
     free(data);
@@ -112,7 +125,7 @@ int parseInputString(const char *cfgString, PROP *cfg)
     char anisotropyString[STR_SIZE];
     char usString[STR_SIZE];
     char uaString[STR_SIZE];
-    if( sscanf(cfgString, "%u,%u,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]]", &cfg->numPhotons, &cfg->globalSeed, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString) < 9 )
+    if( sscanf(cfgString, "%u,%u,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%s", &cfg->numPhotons, &cfg->globalSeed, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString, &cfg->writeDetData, cfg->detDataFilename) < 11 )
     {
         printf("Error reading input string\n");
         return(-1);
@@ -173,5 +186,6 @@ int parseInputString(const char *cfgString, PROP *cfg)
         cfg->layer[i+1].ua_permm = atof(tempString);
         tempString = strtok(NULL, ", ");
     }
+    
     return(0);
 }
