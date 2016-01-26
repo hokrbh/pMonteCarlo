@@ -1,0 +1,72 @@
+#ifndef MCMLSINGLE_H
+#define MCMLSINGLE_H
+
+#ifndef STR_SIZE
+#define STR_SIZE            1024
+#endif
+
+#ifndef PI
+#define PI					3.141592653589793
+#endif
+
+#ifndef C0
+#define C0					0.299792458 // Speed of light in vacuum (mm/ps)
+#endif
+
+typedef struct
+{
+	/* Photon Data */
+	REAL3 r;				// Position vector of photon
+	REAL3 v;				// Unit vector giving the direction of the photon
+	double w;				// Photon weight
+	double t;				// Time
+	double s;				// Demensionless step size (see Wang1995)
+	TAUS_SEED seed;			// Seed for the random number generator
+	/* Flags */
+	unsigned int rid;		// Region photon is in
+	bool scat;				// Flag for whether or not the photon has scattered
+	int det;				// Flag indicating if the photon has been detected ( 0-no; 1-backwards; 2-forwards; 3-specular; 4-killed by roulette )	
+} PHOTON;
+
+typedef struct
+{
+    REAL2 r;
+    REAL3 v;
+    double w;
+    double t;
+    TAUS_SEED initialSeed;
+    int det;
+    // det is 0-not detected, 1-reflection, 2-transmission, 3-specular, 4-killed by absorption threshold
+} PHOTON_DATA;
+
+typedef struct
+{
+    double leftZ_mm;                // Left z-value of the layer
+    double rightZ_mm;               // Right z-value of the layer
+    double n;                       // Index of refraction of the layer
+    double g;                       // Anisotropy (<cos(theta)>) of the layer
+    double us_permm;                // Scattering coefficient in mm^(-1)
+    double ua_permm;                // Absorption coefficient in mm^(-1)
+} LAYER_PROP;
+
+typedef struct
+{
+	unsigned int numPhotons;		// Number of photons to simulate
+    unsigned int globalSeed;	    // Global seed for the simulation
+    double backgroundIndex;         // Index of refraction of the background medium
+    LAYER_PROP *layer;              // Struct to hold the layer properties
+    unsigned int numLayers;         // Number of layers used
+    TAUS_SEED globalTausSeed;       // Global 4 element Taus seed
+    unsigned int writeDetData;              // Flag to determine if detection data is to be written
+    char detDataFilename[STR_SIZE]; // Filename for the detection data
+    double maxStep_mm;              // Max distance photon is allowed to travel
+    double weightThreshold;         // Threshold weight
+    double rouletteProb;            // Roulette probability
+} PROP;
+
+PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, int *error);
+double cosTheta( double xi, double g );
+double sinTheta( double xi, double g );
+void storePhotonData( PHOTON_DATA *dat, PHOTON p );
+
+#endif
