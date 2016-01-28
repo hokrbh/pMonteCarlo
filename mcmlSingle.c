@@ -187,6 +187,7 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, int *error)
                 p.w = 0.0;
                 p.det = 4;
             }*/
+            storePhotonData( &dat, p );
         }
     }
     return(dat);

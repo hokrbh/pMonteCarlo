@@ -3,12 +3,12 @@
 import sys
 import struct
 import pMonteCarlo
-from array import *
+import struct
 
 def main():
-    writeDetData = 1
+    writeDetData = 1 # 0 for no output, 1 for binary, 2 for ascii
     detDataFilename = 'detData.pmc'
-    numPhotons = 1000000
+    numPhotons = 2
     globalSeed = 1
     backgroundIndex = 1.0
     layer_leftZ_mm = [0.0]
@@ -25,9 +25,19 @@ def main():
     
     print(pMonteCarlo.mcml(paramString))
     
-    with open( detDataFilename , 'r' ) as detF:
-        
-    detF.closed
+    if writeDetData != 0:
+        with open( detDataFilename , 'rb' ) as detF:
+            if writeDetData == 1:
+                detFContent = detF.read()
+                lineLength = 80 # Number of bytes per photon in data
+                for i in range(0, numPhotons):	
+                    photonData = struct.unpack("dddddddiIIIIxxxx", detFContent[lineLength*i:lineLength*(i+1)])
+                    print(photonData)
+            elif writeDetData == 2:
+	        for i in range(0, numPhotons):
+		    photonData = detF.readline()
+		    print(photonData)
+            detF.closed
     
     
 

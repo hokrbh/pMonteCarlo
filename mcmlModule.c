@@ -81,7 +81,7 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     double totalRefCoeff = reflectionCoeff+specularCoeff;
     
     // If flag is true write out detection data
-    if( cfg.writeDetData == 1 )
+    if( cfg.writeDetData != 0 )
     {
         FILE *detData = fopen(cfg.detDataFilename, "w");
         if(detData == NULL)
@@ -89,13 +89,25 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
             fprintf(stderr, "Error opening detection data file %s\n", cfg.detDataFilename);
             return NULL;
         }
-        fwrite(data, sizeof(PHOTON_DATA), cfg.numPhotons, detData);
+        if( cfg.writeDetData == 1 ) // Write out binary data
+        {
+            fwrite(data, sizeof(PHOTON_DATA), cfg.numPhotons, detData);
+        }
+        else if( cfg.writeDetData == 2 ) // Write out ASCII data
+        {
+            for( int i = 0; i<cfg.numPhotons; i++ )
+            {
+	        fprintf(detData, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%d\t%u\t%u\t%u\t%u\n", data[i].r.x, data[i].r.y, data[i].v.x, data[i].v.y, data[i].v.z, data[i].w, data[i].t, data[i].det, data[i].initialSeed.z1, data[i].initialSeed.z2, data[i].initialSeed.z3, data[i].initialSeed.z4);
+            }
+        }
+        fclose(detData); 
     }
-    
+    printf("%lu\t%lu\t%lu\n", sizeof(PHOTON_DATA), sizeof(TAUS_SEED), sizeof(int));
+
     //printf("R = %lg\tT = %lg\n", reflectionCoeff, transmissionCoeff);
     
     // Build the return values
-    PyObject *ret = Py_BuildValue("dddd", reflectionCoeff, transmissionCoeff, specularCoeff, totalRefCoeff);
+    PyObject *ret = Py_BuildValue("dddd", totalRefCoeff, transmissionCoeff, reflectionCoeff, specularCoeff);
     
     free(cfg.layer);
     free(data);

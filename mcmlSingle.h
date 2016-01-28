@@ -34,8 +34,8 @@ typedef struct
     REAL3 v;
     double w;
     double t;
-    TAUS_SEED initialSeed;
     int det;
+    TAUS_SEED initialSeed;
     // det is 0-not detected, 1-reflection, 2-transmission, 3-specular, 4-killed by absorption threshold
 } PHOTON_DATA;
 
@@ -51,7 +51,7 @@ typedef struct
 
 typedef struct
 {
-	unsigned int numPhotons;		// Number of photons to simulate
+    unsigned int numPhotons;		// Number of photons to simulate
     unsigned int globalSeed;	    // Global seed for the simulation
     double backgroundIndex;         // Index of refraction of the background medium
     LAYER_PROP *layer;              // Struct to hold the layer properties
