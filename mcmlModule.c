@@ -122,11 +122,7 @@ static PyMethodDef mcmlMethods[] =
     {NULL, NULL, 0, NULL}
 };
 
-/*PyMODINIT_FUNC initpMonteCarlo(void)
-{
-    (void) Py_InitModule3("pMonteCarlo", mcmlMethods, "A Monte Carlo library for python.");
-}*/
-
+#ifdef IS_PY3K
 static struct PyModuleDef mcmlmodule = {
    PyModuleDef_HEAD_INIT,
    "pMonteCarlo",   /* name of module */
@@ -140,6 +136,13 @@ PyMODINIT_FUNC PyInit_pMonteCarlo(void)
 {
     return PyModule_Create(&mcmlmodule);
 }
+#else
+PyMODINIT_FUNC initpMonteCarlo(void)
+{
+    (void) Py_InitModule3("pMonteCarlo", mcmlMethods, "A Monte Carlo library for python.");
+}
+#endif
+
 
 // Parses the input string, cfgString, and stores it in the properties struct, cfg.
 int parseInputString(const char *cfgString, PROP *cfg)
