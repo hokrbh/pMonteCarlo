@@ -118,13 +118,27 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
 
 static PyMethodDef mcmlMethods[] =
 {
-     {"mcml", _mcml, METH_VARARGS, "Monte Carlo Multi-Layer (Wang1995)."},
-     {NULL, NULL, 0, NULL}
+    {"mcml", _mcml, METH_VARARGS, "Monte Carlo Multi-Layer (Wang1995)."},
+    {NULL, NULL, 0, NULL}
 };
 
-PyMODINIT_FUNC initpMonteCarlo(void)
+/*PyMODINIT_FUNC initpMonteCarlo(void)
 {
-     (void) Py_InitModule3("pMonteCarlo", mcmlMethods, "A Monte Carlo library for python.");
+    (void) Py_InitModule3("pMonteCarlo", mcmlMethods, "A Monte Carlo library for python.");
+}*/
+
+static struct PyModuleDef mcmlmodule = {
+   PyModuleDef_HEAD_INIT,
+   "pMonteCarlo",   /* name of module */
+   NULL, /* module documentation, may be NULL */
+   -1,       /* size of per-interpreter state of the module,
+                or -1 if the module keeps state in global variables. */
+   mcmlMethods
+};
+
+PyMODINIT_FUNC PyInit_pMonteCarlo(void)
+{
+    return PyModule_Create(&mcmlmodule);
 }
 
 // Parses the input string, cfgString, and stores it in the properties struct, cfg.

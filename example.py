@@ -34,9 +34,9 @@ def main():
                     photonData = struct.unpack("dddddddiIIIIxxxx", detFContent[lineLength*i:lineLength*(i+1)])
                     print(photonData)
             elif writeDetData == 2:
-	        for i in range(0, numPhotons):
-		    photonData = detF.readline()
-		    print(photonData)
+                for i in range(0, numPhotons):
+                    photonData = detF.readline()
+                    print(photonData)
             detF.closed
     
     
