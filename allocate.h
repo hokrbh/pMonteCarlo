@@ -3,5 +3,6 @@
 
 /* Function definitions */
 void *allocate( unsigned int size );
+void *callocate( unsigned int size );
 
 #endif

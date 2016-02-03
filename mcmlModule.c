@@ -39,8 +39,10 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     cfg.globalTausSeed.z4 = rand();
     cfg.maxStep_mm = 1.0E6;
     cfg.weightThreshold = 1.0E-9;
-    //cfg.rouletteProb = 0.1;
-    
+    cfg.rouletteProb = 0.1;
+
+    double *absData = (double*)callocate(cfg.grid.x.n*cfg.grid.y.n*cfg.grid.z.n*sizeof(double));
+
     double reflectionCoeff = 0.0;
     double transmissionCoeff = 0.0;
     double specularCoeff = 0.0;
@@ -52,7 +54,7 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
         photonSeed.z2 = hybridTausInt(&(cfg.globalTausSeed));
         photonSeed.z3 = hybridTausInt(&(cfg.globalTausSeed));
         photonSeed.z4 = hybridTausInt(&(cfg.globalTausSeed));
-        data[i] = mcmlSingle(cfg, &photonSeed, &error);
+        data[i] = mcmlSingle(cfg, &photonSeed, absData, &error);
         if(error != 0)
         {
             fprintf(stderr, "Error propagating photon %d\n", i);
@@ -100,9 +102,22 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
 	        fprintf(detData, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%d\t%u\t%u\t%u\t%u\n", data[i].r.x, data[i].r.y, data[i].v.x, data[i].v.y, data[i].v.z, data[i].w, data[i].t, data[i].det, data[i].initialSeed.z1, data[i].initialSeed.z2, data[i].initialSeed.z3, data[i].initialSeed.z4);
             }
         }
+        else if( cfg.writeDetData == 0 )
+        {
+            printf("Not writing data\n");
+        }
+        else
+        {
+            printf("Error: Unrecognized writeDetData flag: %u\n", cfg.writeDetData);
+            error = -3; // Currently this does nothing
+            return(NULL);
+        }
         fclose(detData); 
     }
-    printf("%lu\t%lu\t%lu\n", sizeof(PHOTON_DATA), sizeof(TAUS_SEED), sizeof(int));
+
+    // If flag is true write out absorption data
+
+    //printf("%lu\t%lu\t%lu\n", sizeof(PHOTON_DATA), sizeof(TAUS_SEED), sizeof(int));
 
     //printf("R = %lg\tT = %lg\n", reflectionCoeff, transmissionCoeff);
     
@@ -151,12 +166,14 @@ int parseInputString(const char *cfgString, PROP *cfg)
     char anisotropyString[STR_SIZE];
     char usString[STR_SIZE];
     char uaString[STR_SIZE];
-    if( sscanf(cfgString, "%u,%u,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%s", &cfg->numPhotons, &cfg->globalSeed, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString, &cfg->writeDetData, cfg->detDataFilename) < 11 )
+    printf("%s\n", cfgString);
+    if( sscanf(cfgString, "%u,%u,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%[^,],%u,%[^,],%lg,%lg,%u,%lg,%lg,%u,%lg,%lg,%u", &cfg->numPhotons, &cfg->globalSeed, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString, &cfg->writeDetData, cfg->detDataFilename, &cfg->logAbsProfile, cfg->absDataFilename, &cfg->grid.x.min, &cfg->grid.x.max, &cfg->grid.x.n, &cfg->grid.y.min, &cfg->grid.y.max, &cfg->grid.y.n, &cfg->grid.z.min, &cfg->grid.z.max, &cfg->grid.z.n ) < 22 )
     {
         printf("Error reading input string\n");
         return(-1);
     }
     printf("Running %d photons\n", cfg->numPhotons);
+    printf("%s\n", cfg->absDataFilename);
     // Find the number of layers used
     unsigned int i = 0;
     char* tempString;

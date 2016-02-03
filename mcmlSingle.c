@@ -6,7 +6,7 @@
 #include "hybridTaus.h"
 #include "mcmlSingle.h"
 
-PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, int *error)
+PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error)
 {
     PHOTON p;
     PHOTON_DATA dat;

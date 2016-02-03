@@ -17,9 +17,19 @@ def main():
     layer_g = [0.0]
     layer_us_permm = [9.0]
     layer_ua_permm = [1.0]
-    
-    
-    paramString = '{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}'.format(numPhotons, globalSeed, backgroundIndex, layer_leftZ_mm, layer_rightZ_mm, layer_index, layer_g, layer_us_permm, layer_ua_permm, writeDetData, detDataFilename)
+    log_abs_profile = 1 # 0 for no logging, 1 for binary, 2 for ascii
+    absDataFilename = 'absData.pmc'
+    grid_x_min_mm = -1.0
+    grid_x_max_mm = 1.0
+    grid_x_n = 10
+    grid_y_min_mm = -1.0
+    grid_y_max_mm = 1.0
+    grid_y_n = 10
+    grid_z_min_mm = 0.0
+    grid_z_max_mm = 1.0
+    grid_z_n = 10
+
+    paramString = '{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21}'.format(numPhotons, globalSeed, backgroundIndex, layer_leftZ_mm, layer_rightZ_mm, layer_index, layer_g, layer_us_permm, layer_ua_permm, writeDetData, detDataFilename, log_abs_profile, absDataFilename, grid_x_min_mm, grid_x_max_mm, grid_x_n, grid_y_min_mm, grid_y_max_mm, grid_y_n, grid_z_min_mm, grid_z_max_mm, grid_z_n)
     
     #print(paramString)
     
