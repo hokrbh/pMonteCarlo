@@ -1,6 +1,6 @@
 #/usr/lib/python3.5
 #==================================================
-#import future # Uncomment this line for python2
+#import future # Uncomment this line for python2 (untested)
 import sys
 import struct
 import pMonteCarlo
