@@ -49,7 +49,7 @@ def main():
     layer_g = [0.750]
     layer_us_permm = [9.0]
     layer_ua_permm = [1.0]
-    log_abs_profile = 0 # 0 for no logging, 1 for binary (faster), 2 for ascii 
+    log_abs_profile = 1 # 0 for no logging, 1 for binary (faster), 2 for ascii 
     absDataFilename = 'absData.pmc'
     grid_x_min_mm = -1.0
     grid_x_max_mm = 1.0
@@ -97,7 +97,6 @@ def main():
 #==================================================
 if __name__ == '__main__':
     pdata,gdata,X=main()
-
     #pMatrix=pdata.values# Use this to convert DataFrame to numpy Array
 
     dfr=pdata.drop(pdata[pdata['det flag']!=1].index) # Ref photons
@@ -106,6 +105,10 @@ if __name__ == '__main__':
     #pdata[pdata['det flag']==1]['time'].hist(bins=100)#Hist of time
     #pdata[pdata['det flag']==1].plot(x='x-pos',y='y-pos',kind='scatter')
     
+    #========== Examples of plotting gdata ==========
+    # pcolormesh(X['x'],X['y'],gdata[n]) # slice at nth plane in z-dir 
+    # pcolormesh(X['z'],X['x'],gdata[:,X['y'].size/2]) # Slice at middle y-plane
+    # plot(X['z'],sum(gdata.values,axis=(1,2))) # Sum x&y, plot as f(z)
 
 
 
