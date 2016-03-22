@@ -40,13 +40,13 @@ def input_abs_ascii(absDataFilename,grid_shape): # slower than bin
 def main():
     writeDetData = 2 # 0 for no output, 1 for binary, 2 for ascii
     detDataFilename = 'detData.pmc'
-    numPhotons = 100000
+    numPhotons = 10
     globalSeed = 1
     backgroundIndex = 1.0
     layer_leftZ_mm = [0.0]
-    layer_rightZ_mm = [0.2]
+    layer_rightZ_mm = [100.]
     layer_index = [1.0]#5]
-    layer_g = [0.750]
+    layer_g = [0.0]
     layer_us_permm = [9.0]
     layer_ua_permm = [1.0]
     log_abs_profile = 1 # 0 for no logging, 1 for binary (faster), 2 for ascii 
