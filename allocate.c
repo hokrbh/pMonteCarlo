@@ -15,3 +15,14 @@ void *allocate( unsigned int size )
 	}
 	return(ptr);
 }
+
+void *callocate( unsigned int size )
+{
+	void *ptr = calloc(size,1);
+	if(ptr == NULL)
+	{
+		fprintf(stderr,"Memory allocation error, terminating\n");
+		exit(EXIT_FAILURE);
+	}
+	return(ptr);
+}
