@@ -6,6 +6,7 @@ import struct
 import pMonteCarlo
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 #==================== extra Functions ====================
 def input_det_bin(detDataFilename): 
@@ -34,21 +35,35 @@ def input_abs_ascii(absDataFilename,grid_shape): # slower than bin
                                    np.arange(grid_shape[1])])
     df2=pd.read_csv(absDataFilename,sep='\t',header=None).dropna(axis=1) 
     df2.set_index(idx,inplace=True)                                      
-    return pd.DataFrame.to_panel(df2).transpose(1,2,0) 
+    return pd.DataFrame.to_panel(df2).transpose(1,2,0)
 
+def angular_diff(data, numAngleBins, numPhotons): 
+    # Build a histogram of the angles of reflection photons
+    numAngleBins = 30 # Bins are assumed to go from 0 to pi/2
+    dalpha = np.pi/(2.0*numAngleBins) # Bin width of the angles
+    dOmega = np.empty(numAngleBins)
+    for i in range(0,numAngleBins):
+        dOmega[i] = 4.0*np.pi*np.sin((i+0.5)*dalpha)*np.sin(dalpha*0.5)
+    Angles = np.arccos(np.fabs(data['z-vel'].values)) # Angles of Ref photons
+    Weights = data['weight'].values
+    AngleHist, AngleBins = np.histogram(Angles, bins=numAngleBins, weights=Weights)
+    AngleHist_psr = np.divide(AngleHist, dOmega)/numPhotons
+    AngleBins_centers = (AngleBins[0:numAngleBins]+0.5*dalpha)/np.pi
+    return AngleHist_psr, AngleBins_centers
+    
 #========================= MAIN =========================
 def main():
-    writeDetData = 2 # 0 for no output, 1 for binary, 2 for ascii
+    writeDetData = 1 # 0 for no output, 1 for binary, 2 for ascii
     detDataFilename = 'detData.pmc'
-    numPhotons = 10000
+    numPhotons = 1000000
     globalSeed = 1
     backgroundIndex = 1.0
     layer_leftZ_mm = [0.0]
-    layer_rightZ_mm = [5.0]
-    layer_index = [1.6]
-    layer_g = [0.0]
-    layer_us_permm = [2083.0]#For BaSO4
-    layer_ua_permm = [0.01]
+    layer_rightZ_mm = [0.2]
+    layer_index = [1.0]
+    layer_g = [0.75]#[0.6]
+    layer_us_permm = [9.0]#[2083.0]#For BaSO4
+    layer_ua_permm = [1.0]#[0.01]
     log_abs_profile = 0 # 0 for no logging, 1 for binary, 2 for ascii
     absDataFilename = 'absData.pmc'
     grid_x_min_mm = -1.0
@@ -91,6 +106,25 @@ def main():
         elif log_abs_profile == 2:
             gdata=input_abs_ascii(absDataFilename,grid_shape)
 
+    #========== Seperate out reflection from transmission ==========
+    dfr=pdata.drop(pdata[pdata['det flag']!=1].index) # Ref photons
+    dft=pdata.drop(pdata[pdata['det flag']!=2].index) # Trans photons
+
+    #========== Plot angular diffuse reflectance ==========
+    refAngleHist_psr, refAngleBins_centers = angular_diff(dfr, 30, numPhotons) 
+    plt.figure(1)
+    plt.plot(refAngleBins_centers, refAngleHist_psr, 'ro')
+    plt.xlabel(r"$\pi$ radians")
+    plt.ylabel(r"$R ( \theta ) sr^{-1}$")
+
+    #========== Plot angular diffuse transmission ==========
+    transAngleHist_psr, transAngleBins_centers = angular_diff(dft, 30, numPhotons) 
+    plt.figure(2)
+    plt.plot(transAngleBins_centers, transAngleHist_psr, 'ro')
+    plt.xlabel(r"$\pi$ radians")
+    plt.ylabel(r"$T ( \theta ) sr^{-1}$")
+
+    plt.show()
 
     return pdata,gdata,X
 
@@ -101,8 +135,10 @@ if __name__ == '__main__':
 
     dfr=pdata.drop(pdata[pdata['det flag']!=1].index) # Ref photons
     dft=pdata.drop(pdata[pdata['det flag']!=2].index) # Trans photons
-    dfa=pdata.drop(pdata[pdata['det flag']!=4].index) # absorb photons
+    dfa=pdata.drop(pdata[pdata['det flag']!=4].index) # absorb photons 
+
     #pdata[pdata['det flag']==1]['time'].hist(bins=100, weights=pdata[pdata['det flag']==1]['weight'], range=(0.0, 10.0))#Hist of time
+    
     #pdata[pdata['det flag']==1].plot(x='x-pos',y='y-pos',kind='scatter')
     
     #========== Examples of plotting gdata ==========
