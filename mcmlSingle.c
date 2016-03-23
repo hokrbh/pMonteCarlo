@@ -31,6 +31,10 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int
   // Propagate photon
   while( p.det == 0 )
   {
+    if( (p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z - 1.0) > 1.0e-6 )
+    {
+      printf("Velocity not a unit vector: |(%g, %g, %g)| = %g\n", p.v.x, p.v.y, p.v.z, p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z);
+    }
     if( p.s == 0.0 )
     {
       p.s = -log( hybridTaus( &(p.seed) ) );
@@ -46,7 +50,7 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int
     }
     // Determine if the photon will reach a boundary before traveling a distance dr
     bool boundary = false;
-    int newRegion;
+    unsigned int newRegion;
     // Photon must be moving left or right to hit a boundary
     if( p.v.z != 0.0 ) 
     {
@@ -252,6 +256,7 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int
     {
       // Incident angle to the boundary
       double alpha = acos(fabs(p.v.z));
+      double beta;
       double ref;
       // If moving from a high index to a low index total internal reflection is possible
       if( cfg.layer[p.rid].n > cfg.layer[newRegion].n && alpha >= asin(cfg.layer[newRegion].n/cfg.layer[p.rid].n) )
@@ -262,7 +267,7 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int
       else
       {
           // Transmission angle (Snell's law)
-          double beta = asin(cfg.layer[p.rid].n/cfg.layer[newRegion].n*sin(alpha));
+          beta = asin(cfg.layer[p.rid].n/cfg.layer[newRegion].n*sin(alpha));
           double cosAlpha = cos(alpha);
           double cosBeta = cos(beta);
           double temp1 = (cfg.layer[p.rid].n*cosBeta - cfg.layer[newRegion].n*cosAlpha);
@@ -276,7 +281,15 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int
         // Photon transmits through the boundary
         p.v.x = p.v.x*cfg.layer[p.rid].n/cfg.layer[newRegion].n;
         p.v.y = p.v.y*cfg.layer[p.rid].n/cfg.layer[newRegion].n;
-        p.v.z = copysign(1.0,p.v.z)*cos(alpha);
+        p.v.z = copysign(1.0,p.v.z)*cos(beta);
+        /*if( (p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z - 1.0) > 1.0e-6 )
+        {
+          printf("%g\n", copysign(1.0,p.v.z));
+          printf("%g\n", cos(alpha));
+          printf("Old layer: %u, new layer: %u\n", p.rid, newRegion);
+          printf("Old layer index: %g, new layer index: %g\n", cfg.layer[p.rid].n, cfg.layer[newRegion].n);
+          printf("Refraction: |(%g, %g, %g)| = %g\n", p.v.x, p.v.y, p.v.z, p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z);
+        }*/
         p.rid = newRegion;
         if( p.rid == 0 )
         {
@@ -301,6 +314,10 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int
       {
         // Photon reflects at the boundary
         p.v.z = -p.v.z;
+        /*if( (p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z - 1.0) > 1.0e-6 )
+        {
+          printf("Reflection: |(%g, %g, %g)| = %g\n", p.v.x, p.v.y, p.v.z, p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z);
+        }*/
         if( p.rid == 0 )
         {
           // Photon was reflected specularly
@@ -324,14 +341,28 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int
         p.v.x = sTheta*cPhi;
         p.v.y = sTheta*sPhi;
         p.v.z = copysign(1.0,p.v.z)*cTheta;
+        /*if( (p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z - 1.0) > 1.0e-6 )
+        {
+          printf("Scatter along z: |(%g, %g, %g)| = %g\n", p.v.x, p.v.y, p.v.z, p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z);
+        }*/
       }
       else
       {
         double temp = sqrt( 1.0 - p.v.z*p.v.z );
         REAL3 vTemp;
-        vTemp.x = sTheta/temp*(p.v.y*sPhi-p.v.z*p.v.x*cPhi) + p.v.x*cTheta;
-        vTemp.y = sTheta/temp*(p.v.x*sPhi-p.v.z*p.v.y*cPhi) + p.v.y*cTheta;
-        vTemp.z = sTheta*temp*cPhi + p.v.z*cTheta;
+        vTemp.x = sTheta/temp*(p.v.x*p.v.z*cPhi - p.v.y*sPhi) + p.v.x*cTheta;
+        vTemp.y = sTheta/temp*(p.v.y*p.v.z*cPhi + p.v.x*sPhi) + p.v.y*cTheta;
+        vTemp.z = -sTheta*cPhi*temp + p.v.z*cTheta;
+        /*if( fabs(vTemp.x*vTemp.x + vTemp.y*vTemp.y + vTemp.z*vTemp.z - 1.0) > 1.0e-6 )
+        {
+          printf("xi = %g\n", xi);
+          printf("p.rid = %d\n", p.rid);
+          printf("g = %g\n", cfg.layer[p.rid].g);
+          printf("sin(theta) = %g, cos(theta) = %g, mag = %g\n", sTheta, cTheta, sTheta*sTheta + cTheta*cTheta);
+          printf("sin(phi) = %g, cos(phi) = %g, mag = %g\n", sPhi, cPhi, sPhi*sPhi + cPhi*cPhi);
+          printf("Initial Vel: |(%g, %g, %g)| = %g\n", p.v.x, p.v.y, p.v.z, p.v.x*p.v.x + p.v.y*p.v.y + p.v.z*p.v.z);
+          printf("Scatter: |(%g, %g, %g)| = %g\n", vTemp.x, vTemp.y, vTemp.z, vTemp.x*vTemp.x + vTemp.y*vTemp.y + vTemp.z*vTemp.z);
+        }*/
         p.v = vTemp;
       }
       p.scat = true;
@@ -374,7 +405,7 @@ double cosTheta( double xi, double g )
   else
   {
     double temp = (1.0-g*g)/(1.0-g+2.0*g*xi);
-    ans = 1.0/(2*g)*( 1.0 + g*g - temp*temp );
+    ans = 1.0/(2.0*g)*( 1.0 + g*g - temp*temp );
   }
   return(ans);
 }

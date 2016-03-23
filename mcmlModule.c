@@ -49,7 +49,7 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     cfg.grid.x.d = (cfg.grid.x.max-cfg.grid.x.min)/(double)cfg.grid.x.n;
     cfg.grid.x.lefts = (double*)allocate(cfg.grid.x.n*sizeof(double));
     cfg.grid.x.centers = (double*)allocate(cfg.grid.x.n*sizeof(double));
-    for(int i=0; i<cfg.grid.x.n; i++)
+    for( unsigned int i=0; i<cfg.grid.x.n; i++ )
     {
       cfg.grid.x.lefts[i] = cfg.grid.x.min + (double)i*cfg.grid.x.d;
       cfg.grid.x.centers[i] = cfg.grid.x.lefts[i]+0.5*cfg.grid.x.d;
@@ -57,7 +57,7 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     cfg.grid.y.d = (cfg.grid.y.max-cfg.grid.y.min)/(double)cfg.grid.y.n;
     cfg.grid.y.lefts = (double*)allocate(cfg.grid.y.n*sizeof(double));
     cfg.grid.y.centers = (double*)allocate(cfg.grid.y.n*sizeof(double));
-    for(int i=0; i<cfg.grid.y.n; i++)
+    for( unsigned int i=0; i<cfg.grid.y.n; i++ )
     {
       cfg.grid.y.lefts[i] = cfg.grid.y.min + (double)i*cfg.grid.y.d;
       cfg.grid.y.centers[i] = cfg.grid.y.lefts[i]+0.5*cfg.grid.y.d;
@@ -65,7 +65,7 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     cfg.grid.z.d = (cfg.grid.z.max-cfg.grid.z.min)/(double)cfg.grid.z.n;
     cfg.grid.z.lefts = (double*)allocate(cfg.grid.z.n*sizeof(double));
     cfg.grid.z.centers = (double*)allocate(cfg.grid.z.n*sizeof(double));
-    for(int i=0; i<cfg.grid.z.n; i++)
+    for( unsigned int i=0; i<cfg.grid.z.n; i++ )
     {
       cfg.grid.z.lefts[i] = cfg.grid.z.min + (double)i*cfg.grid.z.d;
       cfg.grid.z.centers[i] = cfg.grid.z.lefts[i]+0.5*cfg.grid.z.d;
@@ -83,7 +83,7 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
   double transmissionCoeff = 0.0;
   double specularCoeff = 0.0;
   // Run Monte Carlo simulations
-  for( int i = 0; i < cfg.numPhotons; i++ )
+  for( unsigned int i = 0; i < cfg.numPhotons; i++ )
   {
     TAUS_SEED photonSeed;
     photonSeed.z1 = hybridTausInt(&(cfg.globalTausSeed));
@@ -133,7 +133,7 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     }
     else if( cfg.writeDetData == 2 ) // Write out ASCII data
     {
-      for( int i = 0; i<cfg.numPhotons; i++ )
+      for( unsigned int i = 0; i<cfg.numPhotons; i++ )
       {
           fprintf(detData, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%d\t%u\t%u\t%u\t%u\n", data[i].r.x, data[i].r.y, data[i].v.x, data[i].v.y, data[i].v.z, data[i].w, data[i].t, data[i].det, data[i].initialSeed.z1, data[i].initialSeed.z2, data[i].initialSeed.z3, data[i].initialSeed.z4);
       }
@@ -166,11 +166,11 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
     }
     else if( cfg.logAbsProfile == 2 ) // Write out ascii data
     {
-      for( int k=0; k<cfg.grid.z.n; k++ )
+      for( unsigned int k=0; k<cfg.grid.z.n; k++ )
       {
-        for( int j=0; j<cfg.grid.y.n; j++ )
+        for( unsigned int j=0; j<cfg.grid.y.n; j++ )
         {
-          for( int i=0; i<cfg.grid.x.n; i++ )
+          for( unsigned int i=0; i<cfg.grid.x.n; i++ )
           {
             fprintf(absFile, "%g\t", absData[ voxIndex( i, j, k, cfg ) ] );
           }
@@ -271,37 +271,37 @@ int parseInputString(const char *cfgString, PROP *cfg)
   //printf("Number of layers: %u\n", cfg->numLayers);
   cfg->layer = (LAYER_PROP*)allocate( (cfg->numLayers+1)*sizeof(LAYER_PROP) );
   tempString = strtok(leftZString,", ");
-  for( int i = 0; i < cfg->numLayers; i++ )
+  for( unsigned int i = 0; i < cfg->numLayers; i++ )
   {
     cfg->layer[i+1].leftZ_mm = atof(tempString);
     tempString = strtok(NULL, ", ");
   }
   tempString = strtok(rightZString,", ");
-  for( int i = 0; i < cfg->numLayers; i++ )
+  for( unsigned int i = 0; i < cfg->numLayers; i++ )
   {
     cfg->layer[i+1].rightZ_mm = atof(tempString);
     tempString = strtok(NULL, ", ");
   }
   tempString = strtok(indexString,", ");
-  for( int i = 0; i < cfg->numLayers; i++ )
+  for( unsigned int i = 0; i < cfg->numLayers; i++ )
   {
     cfg->layer[i+1].n = atof(tempString);
     tempString = strtok(NULL, ", ");
   }
   tempString = strtok(anisotropyString,", ");
-  for( int i = 0; i < cfg->numLayers; i++ )
+  for( unsigned int i = 0; i < cfg->numLayers; i++ )
   {
     cfg->layer[i+1].g = atof(tempString);
     tempString = strtok(NULL, ", ");
   }
   tempString = strtok(usString,", ");
-  for( int i = 0; i < cfg->numLayers; i++ )
+  for( unsigned int i = 0; i < cfg->numLayers; i++ )
   {
     cfg->layer[i+1].us_permm = atof(tempString);
     tempString = strtok(NULL, ", ");
   }
   tempString = strtok(uaString,", ");
-  for( int i = 0; i < cfg->numLayers; i++ )
+  for( unsigned int i = 0; i < cfg->numLayers; i++ )
   {
     cfg->layer[i+1].ua_permm = atof(tempString);
     tempString = strtok(NULL, ", ");
