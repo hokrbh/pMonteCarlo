@@ -40,16 +40,16 @@ def input_abs_ascii(absDataFilename,grid_shape): # slower than bin
 def main():
     writeDetData = 2 # 0 for no output, 1 for binary, 2 for ascii
     detDataFilename = 'detData.pmc'
-    numPhotons = 10
+    numPhotons = 10000
     globalSeed = 1
     backgroundIndex = 1.0
     layer_leftZ_mm = [0.0]
-    layer_rightZ_mm = [100.]
-    layer_index = [1.0]#5]
+    layer_rightZ_mm = [5.0]
+    layer_index = [1.6]
     layer_g = [0.0]
-    layer_us_permm = [9.0]
-    layer_ua_permm = [1.0]
-    log_abs_profile = 1 # 0 for no logging, 1 for binary (faster), 2 for ascii 
+    layer_us_permm = [2083.0]#For BaSO4
+    layer_ua_permm = [0.01]
+    log_abs_profile = 0 # 0 for no logging, 1 for binary, 2 for ascii
     absDataFilename = 'absData.pmc'
     grid_x_min_mm = -1.0
     grid_x_max_mm = 1.0
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     dfr=pdata.drop(pdata[pdata['det flag']!=1].index) # Ref photons
     dft=pdata.drop(pdata[pdata['det flag']!=2].index) # Trans photons
     dfa=pdata.drop(pdata[pdata['det flag']!=4].index) # absorb photons
-    #pdata[pdata['det flag']==1]['time'].hist(bins=100)#Hist of time
+    #pdata[pdata['det flag']==1]['time'].hist(bins=100, weights=pdata[pdata['det flag']==1]['weight'], range=(0.0, 10.0))#Hist of time
     #pdata[pdata['det flag']==1].plot(x='x-pos',y='y-pos',kind='scatter')
     
     #========== Examples of plotting gdata ==========
