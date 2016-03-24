@@ -215,21 +215,21 @@ static PyMethodDef mcmlMethods[] =
 #ifdef IS_PY3K
 static struct PyModuleDef mcmlmodule = {
   PyModuleDef_HEAD_INIT,
-  "pMonteCarlo",   /* name of module */
+  "pMonteCarloC",   /* name of module */
   NULL, /* module documentation, may be NULL */
   -1,       /* size of per-interpreter state of the module,
               or -1 if the module keeps state in global variables. */
   mcmlMethods
 };
 
-PyMODINIT_FUNC PyInit_pMonteCarlo(void)
+PyMODINIT_FUNC PyInit_pMonteCarloC(void)
 {
   return PyModule_Create(&mcmlmodule);
 }
 #else
-PyMODINIT_FUNC initpMonteCarlo(void)
+PyMODINIT_FUNC initpMonteCarloC(void)
 {
-    (void) Py_InitModule3("pMonteCarlo", mcmlMethods, "A Monte Carlo library for python.");
+    (void) Py_InitModule3("pMonteCarloC", mcmlMethods, "A Monte Carlo library for python.");
 }
 #endif
 
