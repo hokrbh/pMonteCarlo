@@ -1,7 +1,7 @@
-#from mcmlModule import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from .mcml_run import run
 
 #==================== extra Functions ====================
 

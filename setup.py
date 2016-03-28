@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages, Extension
 
-mcml = Extension('mcml',
-        sources = ['pmontecarlo/mcmlModule.c',\
-                'pmontecarlo/mcmlSingle.c',\
+mcml = Extension('mcml_run',
+        sources = ['pmontecarlo/mcml/mcmlModule.c',\
+                'pmontecarlo/mcml/mcmlSingle.c',\
                 'pmontecarlo/allocate.c',\
                 'pmontecarlo/hybridTaus.c',\
                 'pmontecarlo/vector.c'],
@@ -14,9 +14,7 @@ setup (name = 'pmontecarlo',
         author = 'Brett H. Hokr',
         author_email = 'brett.hokr@gmail.com',
         license = 'GNU GPL v2',
-        #py_modules=['pmontecarlo/functions'],
         packages = find_packages(),
-        #packages = ['pmontecarlo'],
-        #ext_package = 'pmontecarlo/montecarlo',
-        #ext_modules = [mcml]
+        ext_package = 'pmontecarlo/mcml',
+        ext_modules = [mcml]
         )

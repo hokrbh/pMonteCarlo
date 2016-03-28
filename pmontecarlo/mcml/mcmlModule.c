@@ -1,13 +1,15 @@
 #include <Python.h>
 #include <stdbool.h>
 #include <float.h>
-#include "vector.h"
-#include "hybridTaus.h"
-#include "allocate.h"
+#include "../vector.h"
+#include "../hybridTaus.h"
+#include "../allocate.h"
 #include "mcmlSingle.h"
 #include "mcmlModule.h"
 
-static PyObject *_mcml(PyObject* self, PyObject* args)
+/* Anything called run is the function name while mcml_run is the module name */
+
+static PyObject *_run(PyObject* self, PyObject* args)
 {
   int error = 0;
   // Read in paramters as a string from Python
@@ -206,30 +208,30 @@ static PyObject *_mcml(PyObject* self, PyObject* args)
   return ret;
 }
 
-static PyMethodDef mcmlMethods[] =
+static PyMethodDef runMethods[] =
 {
-  {"mcml", _mcml, METH_VARARGS, "Monte Carlo Multi-Layer (Wang1995)."},
+  {"run", _run, METH_VARARGS, "Monte Carlo Multi-Layer (Wang1995)."},
   {NULL, NULL, 0, NULL}
 };
 
 #ifdef IS_PY3K
-static struct PyModuleDef mcmlmodule = {
+static struct PyModuleDef run = {
   PyModuleDef_HEAD_INIT,
-  "mcmlModule",   /* name of module */
+  "mcml_run",   /* name of module */
   NULL, /* module documentation, may be NULL */
   -1,       /* size of per-interpreter state of the module,
               or -1 if the module keeps state in global variables. */
-  mcmlMethods
+  runMethods
 };
 
-PyMODINIT_FUNC PyInit_mcmlModule(void)
+PyMODINIT_FUNC PyInit_mcml_run(void)
 {
-  return PyModule_Create(&mcmlmodule);
+  return PyModule_Create(&run);
 }
 #else
-PyMODINIT_FUNC initmcmlModule(void)
+PyMODINIT_FUNC initmcml_run(void)
 {
-    (void) Py_InitModule3("mcmlModule", mcmlMethods, "A Monte Carlo library for python.");
+    (void) Py_InitModule3("run", runMethods, "A Monte Carlo library for python.");
 }
 #endif
 
