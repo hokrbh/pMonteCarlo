@@ -1,6 +1,6 @@
 #/usr/lib/python3.5
 #==================================================
-import pMonteCarlo as pmc
+import pmontecarlo as pmc
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -44,15 +44,15 @@ paramList=[numPhotons, globalSeed, backgroundIndex, layer_leftZ_mm,\
 paramString=','.join(str(x) for x in paramList) # see Notes
 
 #========== Run MCML Code ==========
-pmc.mcml(paramString)
+pmc.mcml.run(paramString)
 
 #========== Read in detData ==========
 if writeDetData != 0:
     pdata=np.nan
     if writeDetData == 1:
-        pdata=pmc.input_det_bin(detDataFilename)
+        pdata=pmc.mcml.input_det_bin(detDataFilename)
     elif writeDetData == 2:
-        pdata=pmc.input_det_ascii(detDataFilename)
+        pdata=pmc.mcml.input_det_ascii(detDataFilename)
 
 #========== Read in absData ==========
 X={'z':np.linspace(grid_z_min_mm,grid_z_max_mm,grid_z_n),\
@@ -62,9 +62,9 @@ gdata=np.nan
 if log_abs_profile != 0:
     grid_shape=(grid_z_n,grid_y_n,grid_x_n)
     if log_abs_profile == 1:
-        gdata=pmc.input_abs_bin(absDataFilename,grid_shape)
+        gdata=pmc.mcml.input_abs_bin(absDataFilename,grid_shape)
     elif log_abs_profile == 2:
-        gdata=pmc.input_abs_ascii(absDataFilename,grid_shape)
+        gdata=pmc.mcml.input_abs_ascii(absDataFilename,grid_shape)
 
 #========== Seperate out reflection from transmission ==========
 dfr=pdata.drop(pdata[pdata['det flag']!=1].index) # Ref photons
@@ -80,7 +80,7 @@ totalTrans=sum(dft['weight'].values)/numPhotons
 print('Total transmission coefficient:', totalTrans)
 
 #========== Plot angular diffuse reflectance ==========
-refAngleHist_psr, refAngleBins_rad = pmc.angular_diff(dfr, 30, numPhotons) 
+refAngleHist_psr, refAngleBins_rad = pmc.mcml.angular_diff(dfr, 30, numPhotons) 
 plt.figure(1)
 plt.plot(refAngleBins_rad, refAngleHist_psr, 'ro')
 plt.xlabel(r"$\pi$ radians")
@@ -88,7 +88,7 @@ plt.ylabel(r"$R ( \theta )$ sr$^{-1}$")
 plt.ylim([0,0.025])
 
 #========== Plot angular diffuse transmission ==========
-transAngleHist_psr, transAngleBins_rad = pmc.angular_diff(dft, 30, numPhotons) 
+transAngleHist_psr, transAngleBins_rad = pmc.mcml.angular_diff(dft, 30, numPhotons) 
 plt.figure(2)
 plt.plot(transAngleBins_rad, transAngleHist_psr, 'ro')
 plt.xlabel(r"$\pi$ radians")
@@ -130,15 +130,15 @@ paramList=[numPhotons, globalSeed, backgroundIndex, layer_leftZ_mm,\
 paramString=','.join(str(x) for x in paramList) # see Notes
 
 #========== Run MCML Code ==========
-pmc.mcml(paramString)
+pmc.mcml.run(paramString)
 
 #========== Read in detData ==========
 if writeDetData != 0:
     pdata=np.nan
     if writeDetData == 1:
-        pdata=pmc.input_det_bin(detDataFilename)
+        pdata=pmc.mcml.input_det_bin(detDataFilename)
     elif writeDetData == 2:
-        pdata=pmc.input_det_ascii(detDataFilename)
+        pdata=pmc.mcml.input_det_ascii(detDataFilename)
 
 #========== Read in absData ==========
 X={'z':np.linspace(grid_z_min_mm,grid_z_max_mm,grid_z_n),\
@@ -148,9 +148,9 @@ gdata=np.nan
 if log_abs_profile != 0:
     grid_shape=(grid_z_n,grid_y_n,grid_x_n)
     if log_abs_profile == 1:
-        gdata=pmc.input_abs_bin(absDataFilename,grid_shape)
+        gdata=pmc.mcml.input_abs_bin(absDataFilename,grid_shape)
     elif log_abs_profile == 2:
-        gdata=pmc.input_abs_ascii(absDataFilename,grid_shape)
+        gdata=pmc.mcml.input_abs_ascii(absDataFilename,grid_shape)
 
 #========== Seperate out reflection from transmission ==========
 dfr=pdata.drop(pdata[pdata['det flag']!=1].index) # Ref photons

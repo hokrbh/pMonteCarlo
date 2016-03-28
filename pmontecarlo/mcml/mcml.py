@@ -1,12 +1,10 @@
-#/usr/lib/python3.5
-#==================================================
-
-from pMonteCarloC import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from .mcml_run import run
 
 #==================== extra Functions ====================
+
 def input_det_bin(detDataFilename): 
     dt=np.dtype([('x-pos','f8'),('y-pos','f8'),('x-vel','f8'),\
                      ('y-vel','f8'),('z-vel','f8'),('weight','f8'),\

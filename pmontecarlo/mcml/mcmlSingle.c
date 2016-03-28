@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "vector.h"
-#include "hybridTaus.h"
+#include "../vector.h"
+#include "../hybridTaus.h"
 #include "mcmlSingle.h"
 
 PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error)
@@ -262,6 +262,7 @@ PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int
       if( cfg.layer[p.rid].n > cfg.layer[newRegion].n && alpha >= asin(cfg.layer[newRegion].n/cfg.layer[p.rid].n) )
       {
           ref = 1.0;
+          beta = 0.0; // This doesn't matter, but the compiler won't shut up about it
       }
       // Compute Fresnel reflections
       else
