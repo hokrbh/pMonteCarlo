@@ -77,6 +77,8 @@ typedef struct
   unsigned int writeDetData;	    // Flag to determine if detection data is to be written
   char detDataFilename[STR_SIZE]; // Filename for the detection data
   double maxStep_mm;              // Max distance photon is allowed to travel
+  double maxTime_ps;              // Max time photon is allowed to propagate
+  unsigned int useRoulette;       // Flag for using the Russian roulette process
   double weightThreshold;         // Threshold weight
   double rouletteProb;            // Roulette probability
   unsigned int logAbsProfile;	    // Flag to track absorption data and write file

@@ -16,6 +16,10 @@ writeDetData = 1 # 0 for no output, 1 for binary, 2 for ascii
 detDataFilename = 'indexMatched.pmc'
 numPhotons = 1000000
 globalSeed = 1
+maxTime_ps = 1.0E4
+useRoulette = 1 # 0 for no, 1 for yes
+weightThreshold = 1.0E-6 # threshold for Roulette to turn on
+rouletteProb = 0.1 # Probability for photon to survive roulette
 backgroundIndex = 1.0
 layer_leftZ_mm = [0.0]
 layer_rightZ_mm = [0.2]
@@ -35,7 +39,8 @@ grid_z_min_mm = 0.0
 grid_z_max_mm = 0.2
 grid_z_n = 50
 
-paramList=[numPhotons, globalSeed, backgroundIndex, layer_leftZ_mm,\
+paramList=[numPhotons, globalSeed, maxTime_ps, useRoulette, \
+           weightThreshold, rouletteProb, backgroundIndex, layer_leftZ_mm,\
            layer_rightZ_mm, layer_index, layer_g, layer_us_permm, \
            layer_ua_permm, writeDetData, detDataFilename, \
            log_abs_profile, absDataFilename, grid_x_min_mm, \
@@ -102,6 +107,10 @@ writeDetData = 1 # 0 for no output, 1 for binary, 2 for ascii
 detDataFilename = 'indexMismatched.pmc'
 numPhotons = 250000
 globalSeed = 1
+maxTime_ps = 1.0E4
+useRoulette = 1 # 0 for no, 1 for yes
+weightThreshold = 1.0E-6 # threshold for Roulette to turn on
+rouletteProb = 0.1 # Probability for photon to survive roulette
 backgroundIndex = 1.0
 layer_leftZ_mm = [0.0]
 layer_rightZ_mm = [100.0]
@@ -121,7 +130,8 @@ grid_z_min_mm = 0.0
 grid_z_max_mm = 0.2
 grid_z_n = 50
 
-paramList=[numPhotons, globalSeed, backgroundIndex, layer_leftZ_mm,\
+paramList=[numPhotons, globalSeed, maxTime_ps, useRoulette, \
+           weightThreshold, rouletteProb, backgroundIndex, layer_leftZ_mm,\
            layer_rightZ_mm, layer_index, layer_g, layer_us_permm, \
            layer_ua_permm, writeDetData, detDataFilename, \
            log_abs_profile, absDataFilename, grid_x_min_mm, \

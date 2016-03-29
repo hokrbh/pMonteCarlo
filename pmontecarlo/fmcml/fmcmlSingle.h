@@ -1,5 +1,5 @@
-#ifndef FMCMLSINGLE_H
-#define FMCMLSINGLE_H
+#ifndef MCMLSINGLE_H
+#define MCMLSINGLE_H
 
 #ifndef STR_SIZE
 #define STR_SIZE            1024
@@ -77,6 +77,8 @@ typedef struct
   unsigned int writeDetData;	    // Flag to determine if detection data is to be written
   char detDataFilename[STR_SIZE]; // Filename for the detection data
   double maxStep_mm;              // Max distance photon is allowed to travel
+  double maxTime_ps;              // Max time photon is allowed to propagate
+  unsigned int useRoulette;       // Flag for using the Russian roulette process
   double weightThreshold;         // Threshold weight
   double rouletteProb;            // Roulette probability
   unsigned int logAbsProfile;	    // Flag to track absorption data and write file
@@ -85,7 +87,7 @@ typedef struct
   double epsilon;                 // Fudge factor to trip less than for floats
 } PROP;
 
-PHOTON_DATA fmcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error);
+PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error);
 unsigned int voxIndex( unsigned int idx, unsigned int idy, unsigned int idz, PROP cfg );
 double cosTheta( double xi, double g );
 double sinTheta( double xi, double g );

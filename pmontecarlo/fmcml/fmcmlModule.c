@@ -4,10 +4,10 @@
 #include "../vector.h"
 #include "../hybridTaus.h"
 #include "../allocate.h"
-#include "fmcmlSingle.h"
-#include "fmcmlModule.h"
+#include "mcmlSingle.h"
+#include "mcmlModule.h"
 
-/* Anything called run is the function name while fmcml_run is the module name */
+/* Anything called run is the function name while mcml_run is the module name */
 
 static PyObject *_run(PyObject* self, PyObject* args)
 {
@@ -40,8 +40,19 @@ static PyObject *_run(PyObject* self, PyObject* args)
   cfg.globalTausSeed.z3 = rand();
   cfg.globalTausSeed.z4 = rand();
   cfg.maxStep_mm = 1.0E6;
-  cfg.weightThreshold = 1.0E-9;
-  cfg.rouletteProb = 0.1;
+  if( cfg.maxTime_ps == 0.0 )
+  {
+    cfg.maxTime_ps = 3.154E+19; // 1 year of seconds should be sufficient
+    printf("Max time set to 1 year\n");
+  }
+  if( cfg.useRoulette == 1 )
+  {
+    printf("Using Russian roulette elemination process\n");
+  }
+  else
+  {
+    printf("Not using Russian roulette elemination process\n");
+  }
 
   // Initialize absorption grid
   cfg.epsilon = 1.0E-9;
@@ -92,7 +103,7 @@ static PyObject *_run(PyObject* self, PyObject* args)
     photonSeed.z2 = hybridTausInt(&(cfg.globalTausSeed));
     photonSeed.z3 = hybridTausInt(&(cfg.globalTausSeed));
     photonSeed.z4 = hybridTausInt(&(cfg.globalTausSeed));
-    data[i] = fmcmlSingle(cfg, &photonSeed, absData, &error);
+    data[i] = mcmlSingle(cfg, &photonSeed, absData, &error);
     if(error != 0)
     {
         fprintf(stderr, "Error propagating photon %d\n", i);
@@ -217,19 +228,19 @@ static PyMethodDef runMethods[] =
 #ifdef IS_PY3K
 static struct PyModuleDef run = {
   PyModuleDef_HEAD_INIT,
-  "fmcml_run",   /* name of module */
+  "mcml_run",   /* name of module */
   NULL, /* module documentation, may be NULL */
   -1,       /* size of per-interpreter state of the module,
               or -1 if the module keeps state in global variables. */
   runMethods
 };
 
-PyMODINIT_FUNC PyInit_fmcml_run(void)
+PyMODINIT_FUNC PyInit_mcml_run(void)
 {
   return PyModule_Create(&run);
 }
 #else
-PyMODINIT_FUNC initfmcml_run(void)
+PyMODINIT_FUNC initmcml_run(void)
 {
     (void) Py_InitModule3("run", runMethods, "A Monte Carlo library for python.");
 }
@@ -249,7 +260,7 @@ int parseInputString(const char *cfgString, PROP *cfg)
 
   //printf("%s\n", cfgString);
   
-  if( sscanf(cfgString, "%u,%u,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%[^,],%u,%[^,],%lg,%lg,%u,%lg,%lg,%u,%lg,%lg,%u", &cfg->numPhotons, &cfg->globalSeed, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString, &cfg->writeDetData, cfg->detDataFilename, &cfg->logAbsProfile, cfg->absDataFilename, &cfg->grid.x.min, &cfg->grid.x.max, &cfg->grid.x.n, &cfg->grid.y.min, &cfg->grid.y.max, &cfg->grid.y.n, &cfg->grid.z.min, &cfg->grid.z.max, &cfg->grid.z.n ) < 22 )
+  if( sscanf(cfgString, "%u,%u,%lg,%u,%lg,%lg,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%[^,],%u,%[^,],%lg,%lg,%u,%lg,%lg,%u,%lg,%lg,%u", &cfg->numPhotons, &cfg->globalSeed, &cfg->maxTime_ps, &cfg->useRoulette, &cfg->weightThreshold, &cfg->rouletteProb, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString, &cfg->writeDetData, cfg->detDataFilename, &cfg->logAbsProfile, cfg->absDataFilename, &cfg->grid.x.min, &cfg->grid.x.max, &cfg->grid.x.n, &cfg->grid.y.min, &cfg->grid.y.max, &cfg->grid.y.n, &cfg->grid.z.min, &cfg->grid.z.max, &cfg->grid.z.n ) < 26 )
   {
     printf("Error reading input string\n");
     return(-1);

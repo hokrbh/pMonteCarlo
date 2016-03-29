@@ -40,8 +40,19 @@ static PyObject *_run(PyObject* self, PyObject* args)
   cfg.globalTausSeed.z3 = rand();
   cfg.globalTausSeed.z4 = rand();
   cfg.maxStep_mm = 1.0E6;
-  cfg.weightThreshold = 1.0E-9;
-  cfg.rouletteProb = 0.1;
+  if( cfg.maxTime_ps == 0.0 )
+  {
+    cfg.maxTime_ps = 3.154E+19; // 1 year of seconds should be sufficient
+    printf("Max time set to 1 year\n");
+  }
+  if( cfg.useRoulette == 1 )
+  {
+    printf("Using Russian roulette elemination process\n");
+  }
+  else
+  {
+    printf("Not using Russian roulette elemination process\n");
+  }
 
   // Initialize absorption grid
   cfg.epsilon = 1.0E-9;
@@ -249,7 +260,7 @@ int parseInputString(const char *cfgString, PROP *cfg)
 
   //printf("%s\n", cfgString);
   
-  if( sscanf(cfgString, "%u,%u,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%[^,],%u,%[^,],%lg,%lg,%u,%lg,%lg,%u,%lg,%lg,%u", &cfg->numPhotons, &cfg->globalSeed, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString, &cfg->writeDetData, cfg->detDataFilename, &cfg->logAbsProfile, cfg->absDataFilename, &cfg->grid.x.min, &cfg->grid.x.max, &cfg->grid.x.n, &cfg->grid.y.min, &cfg->grid.y.max, &cfg->grid.y.n, &cfg->grid.z.min, &cfg->grid.z.max, &cfg->grid.z.n ) < 22 )
+  if( sscanf(cfgString, "%u,%u,%lg,%u,%lg,%lg,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%[^,],%u,%[^,],%lg,%lg,%u,%lg,%lg,%u,%lg,%lg,%u", &cfg->numPhotons, &cfg->globalSeed, &cfg->maxTime_ps, &cfg->useRoulette, &cfg->weightThreshold, &cfg->rouletteProb, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString, &cfg->writeDetData, cfg->detDataFilename, &cfg->logAbsProfile, cfg->absDataFilename, &cfg->grid.x.min, &cfg->grid.x.max, &cfg->grid.x.n, &cfg->grid.y.min, &cfg->grid.y.max, &cfg->grid.y.n, &cfg->grid.z.min, &cfg->grid.z.max, &cfg->grid.z.n ) < 26 )
   {
     printf("Error reading input string\n");
     return(-1);

@@ -11,6 +11,10 @@ writeDetData = 1 # 0 for no output, 1 for binary, 2 for ascii
 detDataFilename = 'detData.pmc'
 numPhotons = 10000
 globalSeed = 1
+maxTime_ps = 1.0E+4 # 0 for unlimited time
+useRoulette = 1 # 0 for no, 1 for yes
+weightThreshold = 1.0E-6 # threshold for Roulette to turn on
+rouletteProb = 0.1 # Probability for photon to survive roulette
 backgroundIndex = 1.0
 layer_leftZ_mm = [0.0]
 layer_rightZ_mm = [5.0]
@@ -30,7 +34,8 @@ grid_z_min_mm = 0.0
 grid_z_max_mm = 0.2
 grid_z_n = 50
 
-paramList=[numPhotons, globalSeed, backgroundIndex, layer_leftZ_mm,\
+paramList=[numPhotons, globalSeed, maxTime_ps, useRoulette, \
+           weightThreshold, rouletteProb, backgroundIndex, layer_leftZ_mm,\
            layer_rightZ_mm, layer_index, layer_g, layer_us_permm, \
            layer_ua_permm, writeDetData, detDataFilename, \
            log_abs_profile, absDataFilename, grid_x_min_mm, \
@@ -89,7 +94,7 @@ plt.xlabel(r"$\pi$ radians")
 plt.ylabel(r"$T ( \theta )$ sr$^{-1}$")
 
 #========== Plot temporal reflectance ==========
-refTimeHist_perps, refTimeBins_ps = pmc.mcml.temporal_diff(dfr, 0.0, 1000.0, 30, numPhotons)
+refTimeHist_perps, refTimeBins_ps = pmc.mcml.temporal_diff(dfr, 0.0, 10000.0, 30, numPhotons)
 plt.figure(3)
 plt.semilogy(refTimeBins_ps, refTimeHist_perps, 'ro')
 plt.xlabel(r"$t$ (ps)")

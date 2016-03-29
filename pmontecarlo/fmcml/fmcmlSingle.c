@@ -4,9 +4,9 @@
 #include <math.h>
 #include "../vector.h"
 #include "../hybridTaus.h"
-#include "fmcmlSingle.h"
+#include "mcmlSingle.h"
 
-PHOTON_DATA fmcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error)
+PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error)
 {
   PHOTON p;
   PHOTON_DATA dat;
@@ -251,6 +251,12 @@ PHOTON_DATA fmcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, in
     p.r.z += p.v.z*dr;
     p.s -= cfg.layer[p.rid].us_permm*dr;
     p.t += cfg.layer[p.rid].n/C0*dr;
+    // Make sure time hasn't expired
+    if( p.t > cfg.maxTime_ps )
+    {
+      p.det = 5;
+      storePhotonData( &dat, p );
+    }
     // Compute what happens at the boundary
     if( boundary == true )
     {
@@ -299,14 +305,12 @@ PHOTON_DATA fmcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, in
           {
             // Photon exits in reflection
             p.det = 1;
-            
             storePhotonData( &dat, p );
           }
           if( p.v.z > 0.0 )
           {
             // Photon exits in transmission
             p.det = 2;
-            
             storePhotonData( &dat, p );
           }
         }
@@ -371,21 +375,30 @@ PHOTON_DATA fmcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, in
     
     if( p.w < cfg.weightThreshold )
     {
-      // Quit tracking photons below a certain weight
-      p.w = 0.0;
-      p.det = 4;
-      // Play russian roulette
-      /*if( hybridTaus( &(p.seed) ) < cfg.rouletteProb )
+      if( cfg.useRoulette == 1 )
       {
-        p.w = p.w/cfg.rouletteProb;
+        // Play russian roulette
+        if( hybridTaus( &(p.seed) ) < cfg.rouletteProb )
+        {
+          p.w = p.w/cfg.rouletteProb;
+        }
+        else
+        {
+          p.w = 0.0;
+          p.det = 4;
+          storePhotonData( &dat, p );
+        }
       }
       else
       {
+        // Quit tracking photons below a certain weight
         p.w = 0.0;
         p.det = 4;
-      }*/
-      storePhotonData( &dat, p );
+        storePhotonData( &dat, p );
+      }
     }
+
+    // Store photon data to array
   }
   return(dat);
 }

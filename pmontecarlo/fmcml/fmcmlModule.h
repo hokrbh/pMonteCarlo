@@ -1,5 +1,5 @@
-#ifndef FMCMLMODULE_H
-#define FMCMLMODULE_H
+#ifndef MCMLMODULE_H
+#define MCMLMODULE_H
 
 #if PY_MAJOR_VERSION >= 3
 #define IS_PY3K
