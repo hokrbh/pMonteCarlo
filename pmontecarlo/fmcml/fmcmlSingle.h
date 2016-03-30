@@ -70,24 +70,28 @@ typedef struct
 {
   unsigned int numPhotons;	    // Number of photons to simulate
   unsigned int globalSeed;	    // Global seed for the simulation
-  double backgroundIndex;         // Index of refraction of the background medium
-  LAYER_PROP *layer;              // Struct to hold the layer properties
-  unsigned int numLayers;         // Number of layers used
-  TAUS_SEED globalTausSeed;       // Global 4 element Taus seed
+  double beamDiameter_mm;           // 1/e^2 beam diameter
+  double beamFocalDepth_mm;         // Depth below the surface for the focus
+  double numericalAperture;         // Numerical aperture of the beam
+  double beamWavelength_um;         // Wavelength of the beam
+  double backgroundIndex;           // Index of refraction of the background medium
+  LAYER_PROP *layer;                // Struct to hold the layer properties
+  unsigned int numLayers;           // Number of layers used
+  TAUS_SEED globalTausSeed;         // Global 4 element Taus seed
   unsigned int writeDetData;	    // Flag to determine if detection data is to be written
-  char detDataFilename[STR_SIZE]; // Filename for the detection data
-  double maxStep_mm;              // Max distance photon is allowed to travel
-  double maxTime_ps;              // Max time photon is allowed to propagate
-  unsigned int useRoulette;       // Flag for using the Russian roulette process
-  double weightThreshold;         // Threshold weight
-  double rouletteProb;            // Roulette probability
+  char detDataFilename[STR_SIZE];   // Filename for the detection data
+  double maxStep_mm;                // Max distance photon is allowed to travel
+  double maxTime_ps;                // Max time photon is allowed to propagate
+  unsigned int useRoulette;         // Flag for using the Russian roulette process
+  double weightThreshold;           // Threshold weight
+  double rouletteProb;              // Roulette probability
   unsigned int logAbsProfile;	    // Flag to track absorption data and write file
-  char absDataFilename[STR_SIZE]; // Filename for the absorption profile data
+  char absDataFilename[STR_SIZE];   // Filename for the absorption profile data
   VOXEL_PARAM grid;		    // Grid properties for tracking deposited energy
-  double epsilon;                 // Fudge factor to trip less than for floats
+  double epsilon;                   // Fudge factor to trip less than for floats
 } PROP;
 
-PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error);
+PHOTON_DATA fmcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error);
 unsigned int voxIndex( unsigned int idx, unsigned int idy, unsigned int idz, PROP cfg );
 double cosTheta( double xi, double g );
 double sinTheta( double xi, double g );

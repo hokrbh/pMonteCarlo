@@ -15,6 +15,12 @@ maxTime_ps = 1.0E+4 # 0 for unlimited time
 useRoulette = 1 # 0 for no, 1 for yes
 weightThreshold = 1.0E-6 # threshold for Roulette to turn on
 rouletteProb = 0.1 # Probability for photon to survive roulette
+
+beamDiameter_mm = 1.0 # 1/e^2 beam diameter
+beamFocalDepth_mm = 1.0 # Depth below the surface for the focal spot
+numericalAperture = 0.2
+beamWavelength_um = 1.0
+
 backgroundIndex = 1.0
 layer_leftZ_mm = [0.0]
 layer_rightZ_mm = [5.0]
@@ -22,6 +28,7 @@ layer_index = [1.6]
 layer_g = [0.6]
 layer_us_permm = [2083.0]
 layer_ua_permm = [0.001]
+
 log_abs_profile = 0 # 0 for no logging, 1 for binary, 2 for ascii
 absDataFilename = 'absData.pmc'
 grid_x_min_mm = -1.0
@@ -35,9 +42,10 @@ grid_z_max_mm = 0.2
 grid_z_n = 50
 
 paramList=[numPhotons, globalSeed, maxTime_ps, useRoulette, \
-           weightThreshold, rouletteProb, backgroundIndex, layer_leftZ_mm,\
-           layer_rightZ_mm, layer_index, layer_g, layer_us_permm, \
-           layer_ua_permm, writeDetData, detDataFilename, \
+           weightThreshold, rouletteProb, beamDiameter_mm, beamFocalDepth_mm, \
+           numericalAperture, beamWavelength_um, backgroundIndex, \
+           layer_leftZ_mm, layer_rightZ_mm, layer_index, layer_g, \
+           layer_us_permm, layer_ua_permm, writeDetData, detDataFilename, \
            log_abs_profile, absDataFilename, grid_x_min_mm, \
            grid_x_max_mm, grid_x_n, grid_y_min_mm, grid_y_max_mm, \
            grid_y_n, grid_z_min_mm, grid_z_max_mm, grid_z_n]

@@ -4,9 +4,9 @@
 #include <math.h>
 #include "../vector.h"
 #include "../hybridTaus.h"
-#include "mcmlSingle.h"
+#include "fmcmlSingle.h"
 
-PHOTON_DATA mcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error)
+PHOTON_DATA fmcmlSingle(PROP cfg, TAUS_SEED *globalTausSeed, double *absData, int *error)
 {
   PHOTON p;
   PHOTON_DATA dat;

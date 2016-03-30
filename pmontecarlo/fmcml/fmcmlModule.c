@@ -4,8 +4,8 @@
 #include "../vector.h"
 #include "../hybridTaus.h"
 #include "../allocate.h"
-#include "mcmlSingle.h"
-#include "mcmlModule.h"
+#include "fmcmlSingle.h"
+#include "fmcmlModule.h"
 
 /* Anything called run is the function name while mcml_run is the module name */
 
@@ -103,7 +103,7 @@ static PyObject *_run(PyObject* self, PyObject* args)
     photonSeed.z2 = hybridTausInt(&(cfg.globalTausSeed));
     photonSeed.z3 = hybridTausInt(&(cfg.globalTausSeed));
     photonSeed.z4 = hybridTausInt(&(cfg.globalTausSeed));
-    data[i] = mcmlSingle(cfg, &photonSeed, absData, &error);
+    data[i] = fmcmlSingle(cfg, &photonSeed, absData, &error);
     if(error != 0)
     {
         fprintf(stderr, "Error propagating photon %d\n", i);
@@ -260,7 +260,18 @@ int parseInputString(const char *cfgString, PROP *cfg)
 
   //printf("%s\n", cfgString);
   
-  if( sscanf(cfgString, "%u,%u,%lg,%u,%lg,%lg,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%[^,],%u,%[^,],%lg,%lg,%u,%lg,%lg,%u,%lg,%lg,%u", &cfg->numPhotons, &cfg->globalSeed, &cfg->maxTime_ps, &cfg->useRoulette, &cfg->weightThreshold, &cfg->rouletteProb, &cfg->backgroundIndex, leftZString, rightZString, indexString, anisotropyString, usString, uaString, &cfg->writeDetData, cfg->detDataFilename, &cfg->logAbsProfile, cfg->absDataFilename, &cfg->grid.x.min, &cfg->grid.x.max, &cfg->grid.x.n, &cfg->grid.y.min, &cfg->grid.y.max, &cfg->grid.y.n, &cfg->grid.z.min, &cfg->grid.z.max, &cfg->grid.z.n ) < 26 )
+  if( sscanf(cfgString, 
+        "%u,%u,%lg,%u,%lg,%lg,%lg,%lg,%lg,%lg,%lg,[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],[%[^]]],%u,%[^,],%u,%[^,],%lg,%lg,%u,%lg,%lg,%u,%lg,%lg,%u", 
+        &cfg->numPhotons, &cfg->globalSeed, &cfg->maxTime_ps, 
+        &cfg->useRoulette, &cfg->weightThreshold, &cfg->rouletteProb,
+        &cfg->beamDiameter_mm, &cfg->beamFocalDepth_mm,
+        &cfg->numericalAperture, &cfg->beamWavelength_um,
+        &cfg->backgroundIndex, leftZString, rightZString, indexString,
+        anisotropyString, usString, uaString, &cfg->writeDetData,
+        cfg->detDataFilename, &cfg->logAbsProfile, cfg->absDataFilename,
+        &cfg->grid.x.min, &cfg->grid.x.max, &cfg->grid.x.n,
+        &cfg->grid.y.min, &cfg->grid.y.max, &cfg->grid.y.n,
+        &cfg->grid.z.min, &cfg->grid.z.max, &cfg->grid.z.n ) < 30 )
   {
     printf("Error reading input string\n");
     return(-1);
